@@ -72,7 +72,7 @@ class TwitterLogin extends Component {
             const oauthVerifier = query.get('oauth_verifier');
 
             closeDialog();
-            return this.getOauthToken(oauthVerifier, oauthToken);
+            return this.props.callback(oauthVerifier, oauthToken);
           } else {
             closeDialog();
             return this.props.onFailure(new Error(
@@ -89,18 +89,6 @@ class TwitterLogin extends Component {
         // A hack to get around same-origin security policy errors in IE.
       }
     }, 500);
-  }
-
-  getOauthToken(oAuthVerifier, oauthToken) {
-    return window.fetch(`${this.props.loginUrl}?oauth_verifier=${oAuthVerifier}&oauth_token=${oauthToken}`, {
-      method: 'POST',
-      credentials: this.props.credentials,
-      headers: this.getHeaders()
-    }).then(response => {
-      this.props.onSuccess(response);
-    }).catch(error => {
-      return this.props.onFailure(error);
-    });
   }
 
   getDefaultButtonContent() {
@@ -129,7 +117,6 @@ class TwitterLogin extends Component {
 TwitterLogin.propTypes = {
   tag: PropTypes.string,
   text: PropTypes.string,
-  loginUrl: PropTypes.string.isRequired,
   requestTokenUrl: PropTypes.string.isRequired,
   onFailure: PropTypes.func.isRequired,
   onSuccess: PropTypes.func.isRequired,
