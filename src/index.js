@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import 'whatwg-fetch'
 import 'url-search-params-polyfill';
-import  TwitterIcon from 'react-icons/lib/fa/twitter';
-
+import TwitterIcon from 'react-icons/lib/fa/twitter';
 
 class TwitterLogin extends Component {
 
@@ -102,6 +100,13 @@ class TwitterLogin extends Component {
   }
 
   render() {
+    if (typeof this.props.render === 'function') {
+      return this.props.render({
+        onClick: this.onButtonClick,
+        icon: <TwitterIcon color="#00aced" size={25} />,
+      });
+    }
+
     const twitterButton = React.createElement(
       this.props.tag, {
         onClick: this.onButtonClick,
@@ -118,8 +123,6 @@ TwitterLogin.propTypes = {
   tag: PropTypes.string,
   text: PropTypes.string,
   requestTokenUrl: PropTypes.string.isRequired,
-  onFailure: PropTypes.func.isRequired,
-  onSuccess: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   style: PropTypes.object,
   className: PropTypes.string,
@@ -128,6 +131,7 @@ TwitterLogin.propTypes = {
   showIcon: PropTypes.bool,
   credentials: PropTypes.oneOf(['omit', 'same-origin', 'include']),
   customHeaders: PropTypes.object,
+  render: PropTypes.func,
 };
 
 TwitterLogin.defaultProps = {

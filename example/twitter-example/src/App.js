@@ -6,18 +6,23 @@ class App extends Component {
   constructor() {
     super();
 
-    this.onFailed = this.onFailed.bind(this);
-    this.onSuccess = this.onSuccess.bind(this);
+    this.callback = this.callback.bind(this);
   }
 
-  onSuccess(response) {
-    response.json().then(body => {
-      alert(JSON.stringify(body));
+  callback(oAuthVerifier, oauthToken) {
+    return window.fetch(`${this.props.loginUrl}?oauth_verifier=${oAuthVerifier}&oauth_token=${oauthToken}`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }).then(response => {
+      response.json().then(body => {
+        alert(JSON.stringify(body));
+      });
+    }).catch(error => {
+      alert(error);
     });
-  }
-
-  onFailed(error) {
-    alert(error);
   }
 
   render() {
@@ -25,21 +30,21 @@ class App extends Component {
     customHeader['Test'] = 'test-header';
     return (
       <div>
-        <TwitterLogin loginUrl="http://localhost:4000/api/v1/auth/twitter"
-                      onFailure={this.onFailed}
-                      onSuccess={this.onSuccess}
-                      requestTokenUrl="http://localhost:4000/api/v1/auth/twitter/reverse"
-                      showIcon={true}
-                      customHeaders={customHeader}/>
+        <TwitterLogin
+          requestTokenUrl="http://localhost:4000/api/v1/auth/twitter/reverse"
+          callback={this.callback}
+          showIcon
+          customHeaders={customHeader}
+        />
 
-        <TwitterLogin loginUrl="http://localhost:4000/api/v1/auth/twitter"
-                      onFailure={this.onFailed}
-                      onSuccess={this.onSuccess}
-                      requestTokenUrl="http://localhost:4000/api/v1/auth/twitter/reverse"
-                      showIcon={true}
-                      customHeaders={customHeader}>
-          <b>Custom</b> Twitter <i>Login</i> content
-        </TwitterLogin>
+        <TwitterLogin
+          requestTokenUrl="http://localhost:4000/api/v1/auth/twitter/reverse"
+          callback={this.callback}
+          customHeaders={customHeader}
+          render={renderProps => (
+            <button onClick={renderProps.onClick}>Custom sign in with Twitter</button>
+          )}
+        />
       </div>
     );
   }
