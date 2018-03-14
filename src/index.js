@@ -52,7 +52,7 @@ class TwitterLogin extends Component {
     const polling = setInterval(() => {
       if (!popup || popup.closed || popup.closed === undefined) {
         clearInterval(polling);
-        this.props.onFailure(new Error('Popup has been closed by user'));
+        this.props.callback(new Error('Popup has been closed by user'));
       }
 
       const closeDialog = () => {
@@ -71,16 +71,16 @@ class TwitterLogin extends Component {
 
             closeDialog();
             return this.props.callback(oauthVerifier, oauthToken);
-          } else {
-            closeDialog();
-            return this.props.onFailure(new Error(
+          }
+
+          closeDialog();
+          return this.props.callback({
+            error: new Error(
               'OAuth redirect has occurred but no query or hash parameters were found. ' +
               'They were either not set during the redirect, or were removed—typically by a ' +
               'routing library—before Twitter react component could read it.'
-            ));
-          }
-
-
+            )
+          });
         }
       } catch (error) {
         // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
@@ -131,6 +131,7 @@ TwitterLogin.propTypes = {
   showIcon: PropTypes.bool,
   credentials: PropTypes.oneOf(['omit', 'same-origin', 'include']),
   customHeaders: PropTypes.object,
+  callback: PropTypes.func,
   render: PropTypes.func,
 };
 
