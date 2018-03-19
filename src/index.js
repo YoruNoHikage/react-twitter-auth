@@ -35,7 +35,7 @@ class TwitterLogin extends Component {
       this.polling(popup);
     }).catch(error => {
       popup.close();
-      return this.props.onFailure(error);
+      return this.props.callback({error});
     });
   }
 
@@ -52,7 +52,7 @@ class TwitterLogin extends Component {
     const polling = setInterval(() => {
       if (!popup || popup.closed || popup.closed === undefined) {
         clearInterval(polling);
-        this.props.callback(new Error('Popup has been closed by user'));
+        this.props.callback({error: new Error('Popup has been closed by user')});
       }
 
       const closeDialog = () => {
@@ -70,7 +70,7 @@ class TwitterLogin extends Component {
             const oauthVerifier = query.get('oauth_verifier');
 
             closeDialog();
-            return this.props.callback(oauthVerifier, oauthToken);
+            return this.props.callback({oauthVerifier, oauthToken});
           }
 
           closeDialog();
